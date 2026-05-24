@@ -141,7 +141,7 @@ namespace GeoCalc
             this.panelInputCard.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(45)))));
             this.panelInputCard.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(60)))));
             this.panelInputCard.BorderRadius = 15;
-            this.panelInputCard.BorderSize = 1;
+            this.panelInputCard.BorderWidth = 1;
             this.panelInputCard.Location = new System.Drawing.Point(30, 80);
             this.panelInputCard.Name = "panelInputCard";
             this.panelInputCard.Size = new System.Drawing.Size(380, 260);
