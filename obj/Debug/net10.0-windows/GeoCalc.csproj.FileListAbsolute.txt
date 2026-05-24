@@ -1,0 +1,4 @@
+C:\Users\Michal\Desktop\GeoCalc\obj\Debug\net10.0-windows\GeoCalc.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Michal\Desktop\GeoCalc\obj\Debug\net10.0-windows\GeoCalc.AssemblyInfoInputs.cache
+C:\Users\Michal\Desktop\GeoCalc\obj\Debug\net10.0-windows\GeoCalc.AssemblyInfo.cs
+C:\Users\Michal\Desktop\GeoCalc\obj\Debug\net10.0-windows\GeoCalc.csproj.CoreCompileInputs.cache
