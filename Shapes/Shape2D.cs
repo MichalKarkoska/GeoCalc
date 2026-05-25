@@ -17,19 +17,44 @@ namespace GeoCalc.Shapes
         public abstract double CalculatePerimeter(double[] parameters);
 
         /// <summary>
-        /// Implementácia Calculate pre 2D tvary.
+        /// Implementácia Calculate pre 2D tvary s výberom typu výpočtu.
+        /// calculationType: 0 = Obvod, 1 = Obsah
+        /// </summary>
+        public override string Calculate(double[] parameters, int calculationType)
+        {
+            string resultTitle;
+            string resultValue;
+            string resultUnit = "jednotiek";
+
+            if (calculationType == 0)
+            {
+                // Výpočet obvodu
+                double perimeter = CalculatePerimeter(parameters);
+                resultTitle = "📏 OBVOD";
+                resultValue = $"{FormatNumber(perimeter)} {resultUnit}";
+            }
+            else
+            {
+                // Výpočet obsahu (plošného obsahu)
+                double area = CalculateArea(parameters);
+                resultTitle = "📐 OBSAH (PLOCHA)";
+                resultValue = $"{FormatNumber(area)} {resultUnit}²";
+            }
+
+            return $"═══════════════════════════════════════════════\n" +
+                   $"  ✨ VÝSLEDKY PRE: {Name.ToUpper()}\n" +
+                   $"═══════════════════════════════════════════════\n\n" +
+                   $"  {resultTitle}\n" +
+                   $"  {resultValue}\n\n" +
+                   $"═══════════════════════════════════════════════";
+        }
+
+        /// <summary>
+        /// Súbežná metóda Calculate bez calculationType parametra (pre spätnu kompatibilitu).
         /// </summary>
         public override string Calculate(double[] parameters)
         {
-            double area = CalculateArea(parameters);
-            double perimeter = CalculatePerimeter(parameters);
-
-            return $"═══════════════════════════════════\n" +
-                   $"  VÝSLEDKY PRE: {Name.ToUpper()}\n" +
-                   $"═══════════════════════════════════\n\n" +
-                   $"  📐 Obsah (plocha):  {FormatNumber(area)} jednotiek²\n\n" +
-                   $"  📏 Obvod:           {FormatNumber(perimeter)} jednotiek\n\n" +
-                   $"═══════════════════════════════════";
+            return Calculate(parameters, 1); // Predvolene vypočítaj obsah
         }
     }
 }
