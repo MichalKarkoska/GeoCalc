@@ -1,5 +1,3 @@
-using System;
-
 namespace GeoCalc.Shapes
 {
     /// <summary>
@@ -28,13 +26,13 @@ namespace GeoCalc.Shapes
         public override double CalculateArea(double[] parameters)
         {
             double r = parameters[0];
-            return Math.PI * r * r;
+            return System.Math.PI * r * r;
         }
 
         public override double CalculatePerimeter(double[] parameters)
         {
             double r = parameters[0];
-            return 2 * Math.PI * r;
+            return 2 * System.Math.PI * r;
         }
     }
 }
