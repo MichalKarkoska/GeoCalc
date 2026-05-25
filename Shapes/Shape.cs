@@ -35,10 +35,22 @@ namespace GeoCalc.Shapes
 
         /// <summary>
         /// Vykoná výpočty a vráti formátovaný výsledok.
+        /// ZASTARANÉ: Použite Calculate(double[], int) namiesto toho.
         /// </summary>
         /// <param name="parameters">Pole hodnôt parametrov v rovnakom poradí ako ParameterNames.</param>
         /// <returns>Formátovaný reťazec s výsledkami výpočtov.</returns>
-        public abstract string Calculate(double[] parameters);
+        public virtual string Calculate(double[] parameters)
+        {
+            return Calculate(parameters, 0);
+        }
+
+        /// <summary>
+        /// Vykoná výpočty a vráti formátovaný výsledok.
+        /// </summary>
+        /// <param name="parameters">Pole hodnôt parametrov v rovnakom poradí ako ParameterNames.</param>
+        /// <param name="calculationType">Typ výpočtu (0 = prvý, 1 = druhý).</param>
+        /// <returns>Formátovaný reťazec s výsledkami výpočtov.</returns>
+        public abstract string Calculate(double[] parameters, int calculationType);
 
         /// <summary>
         /// Validuje vstupné parametre.
