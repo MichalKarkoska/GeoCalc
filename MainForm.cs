@@ -11,8 +11,7 @@ using GeoCalc.Shapes;
 namespace GeoCalc
 {
     /// <summary>
-    /// Hlavný formulár aplikácie GeoCalc.
-    /// Obsahuje menu, vstupné polia a zobrazenie výsledkov.
+    /// Hlavný formulár aplikácie GeoCalc s vylepšeným dizajnom a funkcionalitou.
     /// </summary>
     public partial class MainForm : Form
     {
@@ -29,10 +28,12 @@ namespace GeoCalc
         private RoundedPanel _inputPanel;
         private RoundedPanel _resultPanel;
         private RoundedPanel _formulaPanel;
+        private RoundedPanel _calculationTypePanel;
         private PictureBox _shapeImage;
         private Label _titleLabel;
         private Label _subtitleLabel;
         private List<RoundedButton> _menuButtons;
+        private List<RoundedButton> _calculationTypeButtons;
         private List<TextBox> _inputFields;
         private List<Label> _inputLabels;
         private RichTextBox _resultTextBox;
@@ -41,15 +42,19 @@ namespace GeoCalc
         private RoundedButton _clearButton;
         private RoundedButton _exportButton;
         private ToolTip _toolTip;
+        
+        // Vybraný typ výpočtu
+        private int _selectedCalculationType = 0;
 
         // Farby pre dark theme
-        private readonly Color _bgDark = Color.FromArgb(30, 30, 35);
-        private readonly Color _bgMedium = Color.FromArgb(40, 40, 48);
-        private readonly Color _bgLight = Color.FromArgb(50, 50, 60);
-        private readonly Color _accentBlue = Color.FromArgb(70, 130, 180);
-        private readonly Color _accentGreen = Color.FromArgb(80, 180, 120);
-        private readonly Color _textPrimary = Color.FromArgb(240, 240, 245);
-        private readonly Color _textSecondary = Color.FromArgb(160, 160, 170);
+        private readonly Color _bgDark = Color.FromArgb(20, 20, 26);
+        private readonly Color _bgMedium = Color.FromArgb(30, 30, 40);
+        private readonly Color _bgLight = Color.FromArgb(45, 45, 58);
+        private readonly Color _accentBlue = Color.FromArgb(100, 150, 200);
+        private readonly Color _accentGreen = Color.FromArgb(100, 200, 140);
+        private readonly Color _accentPurple = Color.FromArgb(150, 100, 200);
+        private readonly Color _textPrimary = Color.FromArgb(250, 250, 255);
+        private readonly Color _textSecondary = Color.FromArgb(170, 170, 190);
 
         public MainForm()
         {
@@ -75,6 +80,7 @@ namespace GeoCalc
             };
 
             _menuButtons = new List<RoundedButton>();
+            _calculationTypeButtons = new List<RoundedButton>();
             _inputFields = new List<TextBox>();
             _inputLabels = new List<Label>();
             _toolTip = new ToolTip();
@@ -96,14 +102,15 @@ namespace GeoCalc
         /// </summary>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.Size = new Size(1200, 750);
-            this.MinimumSize = new Size(1000, 650);
+            this.Size = Screen.PrimaryScreen.WorkingArea.Size;
+            this.Location = Point.Empty;
+            this.WindowState = FormWindowState.Maximized;
             this.BackColor = _bgDark;
             this.DoubleBuffered = true;
         }
 
         /// <summary>
-        /// Vytvorí a nastaví všetky UI komponenty.
+        /// Vytvorí a nastaví všetky UI komponenty s novým dizajnom.
         /// </summary>
         private void SetupUI()
         {
@@ -111,9 +118,9 @@ namespace GeoCalc
             _menuPanel = new Panel
             {
                 Dock = DockStyle.Left,
-                Width = 220,
+                Width = 250,
                 BackColor = _bgMedium,
-                Padding = new Padding(10)
+                Padding = new Padding(12)
             };
             this.Controls.Add(_menuPanel);
 
@@ -121,10 +128,10 @@ namespace GeoCalc
             var logoLabel = new Label
             {
                 Text = "📐 GeoCalc",
-                Font = new Font("Segoe UI", 18f, FontStyle.Bold),
-                ForeColor = _textPrimary,
+                Font = new Font("Segoe UI", 20f, FontStyle.Bold),
+                ForeColor = _accentBlue,
                 Dock = DockStyle.Top,
-                Height = 60,
+                Height = 70,
                 TextAlign = ContentAlignment.MiddleCenter
             };
             _menuPanel.Controls.Add(logoLabel);
@@ -133,8 +140,8 @@ namespace GeoCalc
             var separator1 = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 1,
-                BackColor = Color.FromArgb(70, 70, 80)
+                Height = 2,
+                BackColor = _accentBlue
             };
             _menuPanel.Controls.Add(separator1);
 
@@ -147,19 +154,19 @@ namespace GeoCalc
             };
             _menuPanel.Controls.Add(menuScrollPanel);
 
-            int buttonY = 10;
+            int buttonY = 15;
 
             // Nadpis 2D tvary
             var label2D = new Label
             {
-                Text = "2D TVARY",
-                Font = new Font("Segoe UI", 9f, FontStyle.Bold),
-                ForeColor = _textSecondary,
+                Text = "📊 2D TVARY",
+                Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                ForeColor = _accentGreen,
                 Location = new Point(15, buttonY),
                 AutoSize = true
             };
             menuScrollPanel.Controls.Add(label2D);
-            buttonY += 30;
+            buttonY += 35;
 
             // Tlačidlá pre 2D tvary
             foreach (var shape in _shapes2D)
@@ -169,22 +176,22 @@ namespace GeoCalc
                 btn.Click += OnShapeButtonClick;
                 menuScrollPanel.Controls.Add(btn);
                 _menuButtons.Add(btn);
-                buttonY += 50;
+                buttonY += 55;
             }
 
-            buttonY += 15;
+            buttonY += 20;
 
             // Nadpis 3D tvary
             var label3D = new Label
             {
-                Text = "3D TVARY",
-                Font = new Font("Segoe UI", 9f, FontStyle.Bold),
-                ForeColor = _textSecondary,
+                Text = "🎲 3D TVARY",
+                Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                ForeColor = _accentPurple,
                 Location = new Point(15, buttonY),
                 AutoSize = true
             };
             menuScrollPanel.Controls.Add(label3D);
-            buttonY += 30;
+            buttonY += 35;
 
             // Tlačidlá pre 3D tvary
             foreach (var shape in _shapes3D)
@@ -194,7 +201,7 @@ namespace GeoCalc
                 btn.Click += OnShapeButtonClick;
                 menuScrollPanel.Controls.Add(btn);
                 _menuButtons.Add(btn);
-                buttonY += 50;
+                buttonY += 55;
             }
 
             // === HLAVNÝ OBSAHOVÝ PANEL ===
@@ -202,16 +209,17 @@ namespace GeoCalc
             {
                 Dock = DockStyle.Fill,
                 BackColor = _bgDark,
-                Padding = new Padding(20)
+                Padding = new Padding(25),
+                AutoScroll = true
             };
             this.Controls.Add(_contentPanel);
 
             // Nadpis tvaru
             _titleLabel = new Label
             {
-                Font = new Font("Segoe UI", 24f, FontStyle.Bold),
-                ForeColor = _textPrimary,
-                Location = new Point(20, 15),
+                Font = new Font("Segoe UI", 32f, FontStyle.Bold),
+                ForeColor = _accentBlue,
+                Location = new Point(25, 15),
                 AutoSize = true
             };
             _contentPanel.Controls.Add(_titleLabel);
@@ -219,9 +227,9 @@ namespace GeoCalc
             // Podnadpis
             _subtitleLabel = new Label
             {
-                Font = new Font("Segoe UI", 11f),
+                Font = new Font("Segoe UI", 12f),
                 ForeColor = _textSecondary,
-                Location = new Point(22, 55),
+                Location = new Point(27, 58),
                 AutoSize = true
             };
             _contentPanel.Controls.Add(_subtitleLabel);
@@ -229,20 +237,40 @@ namespace GeoCalc
             // === PANEL S OBRÁZKOM TVARU ===
             _shapeImage = new PictureBox
             {
-                Size = new Size(150, 150),
-                Location = new Point(20, 90),
+                Size = new Size(180, 180),
+                Location = new Point(25, 100),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 BackColor = Color.Transparent
             };
             _contentPanel.Controls.Add(_shapeImage);
 
+            // === PANEL VÝBERU VÝPOČTU ===
+            _calculationTypePanel = new RoundedPanel
+            {
+                BackColor = _bgMedium,
+                Location = new Point(220, 100),
+                Size = new Size(350, 200),
+                BorderRadius = 18
+            };
+            _contentPanel.Controls.Add(_calculationTypePanel);
+
+            var calcTypeTitle = new Label
+            {
+                Text = "🎯 Vyber výpočet",
+                Font = new Font("Segoe UI", 12f, FontStyle.Bold),
+                ForeColor = _textPrimary,
+                Location = new Point(15, 15),
+                AutoSize = true
+            };
+            _calculationTypePanel.Controls.Add(calcTypeTitle);
+
             // === PANEL VSTUPOV ===
             _inputPanel = new RoundedPanel
             {
                 BackColor = _bgMedium,
-                Location = new Point(190, 90),
-                Size = new Size(320, 280),
-                BorderRadius = 15
+                Location = new Point(590, 100),
+                Size = new Size(360, 200),
+                BorderRadius = 18
             };
             _contentPanel.Controls.Add(_inputPanel);
 
@@ -256,34 +284,13 @@ namespace GeoCalc
             };
             _inputPanel.Controls.Add(inputTitle);
 
-            // Tlačidlá
-            _calculateButton = new RoundedButton
-            {
-                Text = "🔢 Vypočítať",
-                Size = new Size(135, 40),
-                Location = new Point(15, 230),
-                NormalColor = _accentBlue,
-                SelectedColor = _accentBlue
-            };
-            _calculateButton.Click += OnCalculateClick;
-            _inputPanel.Controls.Add(_calculateButton);
-
-            _clearButton = new RoundedButton
-            {
-                Text = "🗑️ Vyčistiť",
-                Size = new Size(135, 40),
-                Location = new Point(165, 230)
-            };
-            _clearButton.Click += OnClearClick;
-            _inputPanel.Controls.Add(_clearButton);
-
             // === PANEL VZORCOV ===
             _formulaPanel = new RoundedPanel
             {
                 BackColor = _bgMedium,
-                Location = new Point(530, 90),
-                Size = new Size(400, 150),
-                BorderRadius = 15
+                Location = new Point(970, 100),
+                Size = new Size(400, 500),
+                BorderRadius = 18
             };
             _contentPanel.Controls.Add(_formulaPanel);
 
@@ -291,21 +298,22 @@ namespace GeoCalc
             {
                 Text = "📖 Vzorce",
                 Font = new Font("Segoe UI", 12f, FontStyle.Bold),
-                ForeColor = _textPrimary,
-                Location = new Point(15, 10),
+                ForeColor = _accentGreen,
+                Location = new Point(15, 12),
                 AutoSize = true
             };
             _formulaPanel.Controls.Add(formulaTitle);
 
             _formulaTextBox = new RichTextBox
             {
-                Location = new Point(15, 40),
-                Size = new Size(370, 100),
+                Location = new Point(15, 45),
+                Size = new Size(370, 440),
                 BackColor = _bgLight,
-                ForeColor = _textPrimary,
-                Font = new Font("Consolas", 9f),
+                ForeColor = _accentGreen,
+                Font = new Font("Consolas", 10f),
                 ReadOnly = true,
-                BorderStyle = BorderStyle.None
+                BorderStyle = BorderStyle.None,
+                WordWrap = true
             };
             _formulaPanel.Controls.Add(_formulaTextBox);
 
@@ -313,9 +321,9 @@ namespace GeoCalc
             _resultPanel = new RoundedPanel
             {
                 BackColor = _bgMedium,
-                Location = new Point(530, 260),
-                Size = new Size(400, 180),
-                BorderRadius = 15
+                Location = new Point(25, 330),
+                Size = new Size(540, 270),
+                BorderRadius = 18
             };
             _contentPanel.Controls.Add(_resultPanel);
 
@@ -323,30 +331,56 @@ namespace GeoCalc
             {
                 Text = "📊 Výsledky",
                 Font = new Font("Segoe UI", 12f, FontStyle.Bold),
-                ForeColor = _textPrimary,
-                Location = new Point(15, 10),
+                ForeColor = _accentGreen,
+                Location = new Point(15, 12),
                 AutoSize = true
             };
             _resultPanel.Controls.Add(resultTitle);
 
             _resultTextBox = new RichTextBox
             {
-                Location = new Point(15, 40),
-                Size = new Size(370, 90),
+                Location = new Point(15, 45),
+                Size = new Size(510, 160),
                 BackColor = _bgLight,
                 ForeColor = _accentGreen,
-                Font = new Font("Consolas", 10f),
+                Font = new Font("Consolas", 11f),
                 ReadOnly = true,
-                BorderStyle = BorderStyle.None
+                BorderStyle = BorderStyle.None,
+                WordWrap = true
             };
             _resultPanel.Controls.Add(_resultTextBox);
 
+            // Tlačidlá
+            _calculateButton = new RoundedButton
+            {
+                Text = "🔢 Vypočítať",
+                Size = new Size(155, 45),
+                Location = new Point(15, 215),
+                NormalColor = _accentBlue,
+                SelectedColor = _accentBlue,
+                Font = new Font("Segoe UI", 10f, FontStyle.Bold)
+            };
+            _calculateButton.Click += OnCalculateClick;
+            _resultPanel.Controls.Add(_calculateButton);
+
+            _clearButton = new RoundedButton
+            {
+                Text = "🗑️ Vyčistiť",
+                Size = new Size(155, 45),
+                Location = new Point(180, 215),
+                NormalColor = Color.FromArgb(100, 100, 110),
+                Font = new Font("Segoe UI", 10f, FontStyle.Bold)
+            };
+            _clearButton.Click += OnClearClick;
+            _resultPanel.Controls.Add(_clearButton);
+
             _exportButton = new RoundedButton
             {
-                Text = "💾 Exportovať do TXT",
-                Size = new Size(180, 35),
-                Location = new Point(200, 138),
-                NormalColor = Color.FromArgb(70, 100, 80)
+                Text = "💾 Exportovať",
+                Size = new Size(155, 45),
+                Location = new Point(345, 215),
+                NormalColor = Color.FromArgb(100, 130, 90),
+                Font = new Font("Segoe UI", 10f, FontStyle.Bold)
             };
             _exportButton.Click += OnExportClick;
             _resultPanel.Controls.Add(_exportButton);
@@ -363,9 +397,11 @@ namespace GeoCalc
             return new RoundedButton
             {
                 Text = text,
-                Size = new Size(190, 42),
+                Size = new Size(220, 48),
                 Location = new Point(10, y),
-                Font = new Font("Segoe UI", 10f)
+                Font = new Font("Segoe UI", 11f, FontStyle.Bold),
+                NormalColor = _bgLight,
+                SelectedColor = _accentBlue
             };
         }
 
@@ -401,9 +437,9 @@ namespace GeoCalc
             
             // Aktualizovať podnadpis
             if (shape is Shape2D)
-                _subtitleLabel.Text = "2D tvar • Obsah a obvod";
+                _subtitleLabel.Text = "2D tvar • Vyberte typ výpočtu a zadajte rozmery";
             else
-                _subtitleLabel.Text = "3D tvar • Objem a povrch";
+                _subtitleLabel.Text = "3D tvar • Vyberte typ výpočtu a zadajte rozmery";
 
             // Aktualizovať vzorce
             _formulaTextBox.Text = shape.GetFormulas();
@@ -413,6 +449,9 @@ namespace GeoCalc
 
             // Vytvoriť vstupné polia
             CreateInputFields(shape);
+            
+            // Vytvoriť tlačidlá výpočtu
+            CreateCalculationTypeButtons(shape);
 
             // Načítať obrázok
             LoadShapeImage(shape);
@@ -444,7 +483,7 @@ namespace GeoCalc
                 var label = new Label
                 {
                     Text = shape.ParameterNames[i] + ":",
-                    Font = new Font("Segoe UI", 10f),
+                    Font = new Font("Segoe UI", 10f, FontStyle.Bold),
                     ForeColor = _textPrimary,
                     Location = new Point(15, y + 3),
                     AutoSize = true
@@ -454,12 +493,12 @@ namespace GeoCalc
 
                 var textBox = new TextBox
                 {
-                    Size = new Size(130, 30),
-                    Location = new Point(165, y),
+                    Size = new Size(130, 32),
+                    Location = new Point(210, y),
                     BackColor = _bgLight,
-                    ForeColor = _textPrimary,
+                    ForeColor = _accentBlue,
                     BorderStyle = BorderStyle.FixedSingle,
-                    Font = new Font("Segoe UI", 11f)
+                    Font = new Font("Segoe UI", 11f, FontStyle.Bold)
                 };
                 
                 // Pridať tooltip
@@ -481,16 +520,120 @@ namespace GeoCalc
                 _inputPanel.Controls.Add(textBox);
                 _inputFields.Add(textBox);
 
-                y += 40;
+                y += 38;
             }
 
-            // Posunúť tlačidlá ak je veľa parametrov
-            int buttonY = Math.Max(230, y + 20);
-            _calculateButton.Location = new Point(15, buttonY);
-            _clearButton.Location = new Point(165, buttonY);
-            
             // Upraviť výšku panelu
-            _inputPanel.Height = buttonY + 55;
+            _inputPanel.Height = Math.Max(200, y + 20);
+        }
+
+        /// <summary>
+        /// Vytvorí tlačidlá pre výber typu výpočtu.
+        /// </summary>
+        private void CreateCalculationTypeButtons(Shape shape)
+        {
+            // Odstrániť existujúce tlačidlá
+            foreach (var btn in _calculationTypeButtons)
+            {
+                _calculationTypePanel.Controls.Remove(btn);
+                btn.Dispose();
+            }
+            _calculationTypeButtons.Clear();
+
+            int y = 45;
+            int index = 0;
+
+            if (shape is Shape2D shape2D)
+            {
+                // Tlačidlo pre obvod
+                var btnPerimeter = new RoundedButton
+                {
+                    Text = "📏 Obvod",
+                    Size = new Size(150, 40),
+                    Location = new Point(15, y),
+                    NormalColor = _bgLight,
+                    SelectedColor = _accentGreen,
+                    Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                    IsSelected = (index == 0)
+                };
+                btnPerimeter.Click += (s, e) => SelectCalculationType(0);
+                _calculationTypePanel.Controls.Add(btnPerimeter);
+                _calculationTypeButtons.Add(btnPerimeter);
+                y += 50;
+                index++;
+
+                // Tlačidlo pre obsah
+                var btnArea = new RoundedButton
+                {
+                    Text = "📐 Obsah",
+                    Size = new Size(150, 40),
+                    Location = new Point(15, y),
+                    NormalColor = _bgLight,
+                    SelectedColor = _accentGreen,
+                    Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                    IsSelected = (index == 0)
+                };
+                btnArea.Click += (s, e) => SelectCalculationType(1);
+                _calculationTypePanel.Controls.Add(btnArea);
+                _calculationTypeButtons.Add(btnArea);
+
+                _calculationTypePanel.Height = 140;
+            }
+            else if (shape is Shape3D shape3D)
+            {
+                // Tlačidlo pre objem
+                var btnVolume = new RoundedButton
+                {
+                    Text = "🎲 Objem",
+                    Size = new Size(150, 40),
+                    Location = new Point(15, y),
+                    NormalColor = _bgLight,
+                    SelectedColor = _accentPurple,
+                    Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                    IsSelected = (index == 0)
+                };
+                btnVolume.Click += (s, e) => SelectCalculationType(0);
+                _calculationTypePanel.Controls.Add(btnVolume);
+                _calculationTypeButtons.Add(btnVolume);
+                y += 50;
+                index++;
+
+                // Tlačidlo pre povrch
+                var btnSurface = new RoundedButton
+                {
+                    Text = "🔲 Povrch",
+                    Size = new Size(150, 40),
+                    Location = new Point(15, y),
+                    NormalColor = _bgLight,
+                    SelectedColor = _accentPurple,
+                    Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                    IsSelected = (index == 0)
+                };
+                btnSurface.Click += (s, e) => SelectCalculationType(1);
+                _calculationTypePanel.Controls.Add(btnSurface);
+                _calculationTypeButtons.Add(btnSurface);
+
+                _calculationTypePanel.Height = 140;
+            }
+
+            _selectedCalculationType = 0;
+        }
+
+        /// <summary>
+        /// Vyberie typ výpočtu.
+        /// </summary>
+        private void SelectCalculationType(int index)
+        {
+            // Zrušiť výber všetkých tlačidiel
+            foreach (var btn in _calculationTypeButtons)
+                btn.IsSelected = false;
+
+            // Vybrať aktuálne tlačidlo
+            if (index >= 0 && index < _calculationTypeButtons.Count)
+            {
+                _calculationTypeButtons[index].IsSelected = true;
+                _selectedCalculationType = index;
+            }
         }
 
         /// <summary>
@@ -499,46 +642,46 @@ namespace GeoCalc
         private void LoadShapeImage(Shape shape)
         {
             // Vytvoriť jednoduchý obrázok tvaru programovo
-            Bitmap bmp = new Bitmap(150, 150);
+            Bitmap bmp = new Bitmap(180, 180);
             using (Graphics g = Graphics.FromImage(bmp))
             {
                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 g.Clear(Color.Transparent);
 
                 using (Pen pen = new Pen(_accentBlue, 3))
-                using (SolidBrush brush = new SolidBrush(Color.FromArgb(50, 70, 130, 180)))
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(60, 100, 150, 200)))
                 {
                     switch (shape.Name)
                     {
                         case "Kruh":
-                            g.FillEllipse(brush, 25, 25, 100, 100);
-                            g.DrawEllipse(pen, 25, 25, 100, 100);
+                            g.FillEllipse(brush, 25, 25, 130, 130);
+                            g.DrawEllipse(pen, 25, 25, 130, 130);
                             break;
                             
                         case "Obdĺžnik":
-                            g.FillRectangle(brush, 20, 40, 110, 70);
-                            g.DrawRectangle(pen, 20, 40, 110, 70);
+                            g.FillRectangle(brush, 20, 40, 140, 100);
+                            g.DrawRectangle(pen, 20, 40, 140, 100);
                             break;
                             
                         case "Štvorec":
-                            g.FillRectangle(brush, 30, 30, 90, 90);
-                            g.DrawRectangle(pen, 30, 30, 90, 90);
+                            g.FillRectangle(brush, 30, 30, 120, 120);
+                            g.DrawRectangle(pen, 30, 30, 120, 120);
                             break;
                             
                         case "Trojuholník":
-                            Point[] triangle = { new Point(75, 20), new Point(130, 120), new Point(20, 120) };
+                            Point[] triangle = { new Point(90, 15), new Point(165, 150), new Point(15, 150) };
                             g.FillPolygon(brush, triangle);
                             g.DrawPolygon(pen, triangle);
                             break;
                             
                         case "Lichobežník":
-                            Point[] trapezoid = { new Point(40, 30), new Point(110, 30), new Point(130, 110), new Point(20, 110) };
+                            Point[] trapezoid = { new Point(40, 30), new Point(140, 30), new Point(160, 150), new Point(20, 150) };
                             g.FillPolygon(brush, trapezoid);
                             g.DrawPolygon(pen, trapezoid);
                             break;
                             
                         case "Kosoštvorec":
-                            Point[] rhombus = { new Point(75, 15), new Point(135, 75), new Point(75, 135), new Point(15, 75) };
+                            Point[] rhombus = { new Point(90, 10), new Point(170, 90), new Point(90, 170), new Point(10, 90) };
                             g.FillPolygon(brush, rhombus);
                             g.DrawPolygon(pen, rhombus);
                             break;
@@ -552,9 +695,9 @@ namespace GeoCalc
                             break;
                             
                         case "Guľa":
-                            g.FillEllipse(brush, 25, 25, 100, 100);
-                            g.DrawEllipse(pen, 25, 25, 100, 100);
-                            g.DrawArc(new Pen(_accentBlue, 1), 35, 50, 80, 50, 0, 180);
+                            g.FillEllipse(brush, 25, 25, 130, 130);
+                            g.DrawEllipse(pen, 25, 25, 130, 130);
+                            g.DrawArc(new Pen(_accentBlue, 2), 35, 60, 110, 60, 0, 180);
                             break;
                             
                         case "Valec":
@@ -570,8 +713,8 @@ namespace GeoCalc
                             break;
                             
                         default:
-                            g.FillRectangle(brush, 25, 25, 100, 100);
-                            g.DrawRectangle(pen, 25, 25, 100, 100);
+                            g.FillRectangle(brush, 25, 25, 130, 130);
+                            g.DrawRectangle(pen, 25, 25, 130, 130);
                             break;
                     }
                 }
@@ -584,81 +727,70 @@ namespace GeoCalc
 
         private void DrawCube(Graphics g, Pen pen, SolidBrush brush)
         {
-            // Predná stena
-            Point[] front = { new Point(30, 50), new Point(100, 50), new Point(100, 120), new Point(30, 120) };
+            Point[] front = { new Point(30, 50), new Point(120, 50), new Point(120, 140), new Point(30, 140) };
             g.FillPolygon(brush, front);
             g.DrawPolygon(pen, front);
             
-            // Horná stena
-            Point[] top = { new Point(30, 50), new Point(60, 25), new Point(130, 25), new Point(100, 50) };
-            g.FillPolygon(new SolidBrush(Color.FromArgb(70, 70, 130, 180)), top);
+            Point[] top = { new Point(30, 50), new Point(70, 20), new Point(160, 20), new Point(120, 50) };
+            g.FillPolygon(new SolidBrush(Color.FromArgb(80, 100, 150, 200)), top);
             g.DrawPolygon(pen, top);
             
-            // Pravá stena
-            Point[] right = { new Point(100, 50), new Point(130, 25), new Point(130, 95), new Point(100, 120) };
-            g.FillPolygon(new SolidBrush(Color.FromArgb(30, 70, 130, 180)), right);
+            Point[] right = { new Point(120, 50), new Point(160, 20), new Point(160, 110), new Point(120, 140) };
+            g.FillPolygon(new SolidBrush(Color.FromArgb(40, 100, 150, 200)), right);
             g.DrawPolygon(pen, right);
         }
 
         private void DrawCuboid(Graphics g, Pen pen, SolidBrush brush)
         {
-            Point[] front = { new Point(20, 55), new Point(100, 55), new Point(100, 115), new Point(20, 115) };
+            Point[] front = { new Point(20, 60), new Point(130, 60), new Point(130, 140), new Point(20, 140) };
             g.FillPolygon(brush, front);
             g.DrawPolygon(pen, front);
             
-            Point[] top = { new Point(20, 55), new Point(55, 30), new Point(135, 30), new Point(100, 55) };
-            g.FillPolygon(new SolidBrush(Color.FromArgb(70, 70, 130, 180)), top);
+            Point[] top = { new Point(20, 60), new Point(60, 25), new Point(170, 25), new Point(130, 60) };
+            g.FillPolygon(new SolidBrush(Color.FromArgb(80, 100, 150, 200)), top);
             g.DrawPolygon(pen, top);
             
-            Point[] right = { new Point(100, 55), new Point(135, 30), new Point(135, 90), new Point(100, 115) };
-            g.FillPolygon(new SolidBrush(Color.FromArgb(30, 70, 130, 180)), right);
+            Point[] right = { new Point(130, 60), new Point(170, 25), new Point(170, 105), new Point(130, 140) };
+            g.FillPolygon(new SolidBrush(Color.FromArgb(40, 100, 150, 200)), right);
             g.DrawPolygon(pen, right);
         }
 
         private void DrawCylinder(Graphics g, Pen pen, SolidBrush brush)
         {
-            // Telo
-            g.FillRectangle(brush, 35, 45, 80, 70);
-            g.DrawLine(pen, 35, 45, 35, 115);
-            g.DrawLine(pen, 115, 45, 115, 115);
+            g.FillRectangle(brush, 40, 50, 100, 80);
+            g.DrawLine(pen, 40, 50, 40, 130);
+            g.DrawLine(pen, 140, 50, 140, 130);
             
-            // Horná elipsa
-            g.FillEllipse(new SolidBrush(Color.FromArgb(70, 70, 130, 180)), 35, 30, 80, 30);
-            g.DrawEllipse(pen, 35, 30, 80, 30);
+            g.FillEllipse(new SolidBrush(Color.FromArgb(80, 100, 150, 200)), 40, 30, 100, 40);
+            g.DrawEllipse(pen, 40, 30, 100, 40);
             
-            // Dolná elipsa
-            g.DrawArc(pen, 35, 100, 80, 30, 0, 180);
+            g.DrawArc(pen, 40, 110, 100, 40, 0, 180);
         }
 
         private void DrawCone(Graphics g, Pen pen, SolidBrush brush)
         {
-            // Telo
-            Point[] cone = { new Point(75, 25), new Point(125, 110), new Point(25, 110) };
+            Point[] cone = { new Point(90, 20), new Point(160, 140), new Point(20, 140) };
             g.FillPolygon(brush, cone);
-            g.DrawLine(pen, 75, 25, 25, 110);
-            g.DrawLine(pen, 75, 25, 125, 110);
+            g.DrawLine(pen, 90, 20, 20, 140);
+            g.DrawLine(pen, 90, 20, 160, 140);
             
-            // Základňa
-            g.FillEllipse(new SolidBrush(Color.FromArgb(50, 70, 130, 180)), 25, 95, 100, 30);
-            g.DrawEllipse(pen, 25, 95, 100, 30);
+            g.FillEllipse(new SolidBrush(Color.FromArgb(60, 100, 150, 200)), 20, 120, 140, 45);
+            g.DrawEllipse(pen, 20, 120, 140, 45);
         }
 
         private void DrawPyramid(Graphics g, Pen pen, SolidBrush brush)
         {
-            // Predná stena
-            Point[] front = { new Point(75, 20), new Point(120, 100), new Point(30, 100) };
+            Point[] front = { new Point(90, 15), new Point(150, 130), new Point(30, 130) };
             g.FillPolygon(brush, front);
             g.DrawPolygon(pen, front);
             
-            // Pravá stena
-            Point[] right = { new Point(75, 20), new Point(120, 100), new Point(100, 120), new Point(75, 85) };
-            g.FillPolygon(new SolidBrush(Color.FromArgb(30, 70, 130, 180)), right);
-            g.DrawLine(pen, 75, 20, 100, 120);
-            g.DrawLine(pen, 120, 100, 100, 120);
+            Point[] right = { new Point(90, 15), new Point(150, 130), new Point(130, 160), new Point(90, 95) };
+            g.FillPolygon(new SolidBrush(Color.FromArgb(40, 100, 150, 200)), right);
+            g.DrawLine(pen, 90, 15, 130, 160);
+            g.DrawLine(pen, 150, 130, 130, 160);
             
-            // Základňa
-            Point[] baseP = { new Point(30, 100), new Point(120, 100), new Point(100, 120), new Point(50, 120) };
-            g.DrawPolygon(new Pen(_accentBlue, 1), baseP);
+            Point[] baseP = { new Point(30, 130), new Point(150, 130), new Point(130, 160), new Point(50, 160) };
+            g.DrawPolygon(new Pen(_accentBlue, 2), baseP);
         }
 
         /// <summary>
@@ -698,7 +830,7 @@ namespace GeoCalc
             // Vypočítať a zobraziť výsledok
             try
             {
-                string result = _currentShape.Calculate(parameters);
+                string result = _currentShape.Calculate(parameters, _selectedCalculationType);
                 _resultTextBox.Text = result;
             }
             catch (Exception ex)
@@ -751,9 +883,14 @@ namespace GeoCalc
                 {
                     try
                     {
+                        string[] calcTypeNames = _currentShape is Shape2D 
+                            ? new[] { "Obvod", "Obsah" }
+                            : new[] { "Objem", "Povrch" };
+
                         string content = $"GeoCalc - Export výsledkov\n" +
                                         $"Dátum: {DateTime.Now:dd.MM.yyyy HH:mm:ss}\n" +
-                                        $"Tvar: {_currentShape?.Name}\n\n" +
+                                        $"Tvar: {_currentShape?.Name}\n" +
+                                        $"Typ výpočtu: {calcTypeNames[_selectedCalculationType]}\n\n" +
                                         $"ZADANÉ HODNOTY:\n";
 
                         for (int i = 0; i < _inputFields.Count; i++)
@@ -789,22 +926,14 @@ namespace GeoCalc
         /// </summary>
         private void OnFormResize(object sender, EventArgs e)
         {
-            // Upraviť pozície panelov pri resize
-            int availableWidth = _contentPanel.Width - 40;
-            int panelWidth = Math.Min(420, (availableWidth - _inputPanel.Right - 20));
-
-            if (panelWidth > 250)
+            // Dynamické prispôsobenie rozloženia
+            if (this.Width < 1400)
             {
-                _formulaPanel.Width = panelWidth;
-                _resultPanel.Width = panelWidth;
-                _formulaTextBox.Width = panelWidth - 30;
-                _resultTextBox.Width = panelWidth - 30;
-                
-                int newX = _contentPanel.Width - panelWidth - 20;
-                _formulaPanel.Location = new Point(newX, _formulaPanel.Top);
-                _resultPanel.Location = new Point(newX, _resultPanel.Top);
-                
-                _exportButton.Location = new Point(panelWidth - 195, _exportButton.Top);
+                _formulaPanel.Visible = false;
+            }
+            else
+            {
+                _formulaPanel.Visible = true;
             }
         }
     }
