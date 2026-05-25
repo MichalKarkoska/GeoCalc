@@ -17,19 +17,43 @@ namespace GeoCalc.Shapes
         public abstract double CalculateSurfaceArea(double[] parameters);
 
         /// <summary>
-        /// Implementácia Calculate pre 3D tvary.
+        /// Implementácia Calculate pre 3D tvary s výberom typu výpočtu.
+        /// calculationType: 0 = Objem, 1 = Povrch
+        /// </summary>
+        public override string Calculate(double[] parameters, int calculationType)
+        {
+            string resultTitle;
+            string resultValue;
+
+            if (calculationType == 0)
+            {
+                // Výpočet objemu
+                double volume = CalculateVolume(parameters);
+                resultTitle = "🎲 OBJEM";
+                resultValue = $"{FormatNumber(volume)} jednotiek³";
+            }
+            else
+            {
+                // Výpočet povrchu
+                double surfaceArea = CalculateSurfaceArea(parameters);
+                resultTitle = "🔲 POVRCH";
+                resultValue = $"{FormatNumber(surfaceArea)} jednotiek²";
+            }
+
+            return $"═══════════════════════════════════════════════\n" +
+                   $"  ✨ VÝSLEDKY PRE: {Name.ToUpper()}\n" +
+                   $"═══════════════════════════════════════════════\n\n" +
+                   $"  {resultTitle}\n" +
+                   $"  {resultValue}\n\n" +
+                   $"═══════════════════════════════════════════════";
+        }
+
+        /// <summary>
+        /// Súbežná metóda Calculate bez calculationType parametra (pre spätnu kompatibilitu).
         /// </summary>
         public override string Calculate(double[] parameters)
         {
-            double volume = CalculateVolume(parameters);
-            double surfaceArea = CalculateSurfaceArea(parameters);
-
-            return $"═══════════════════════════════════\n" +
-                   $"  VÝSLEDKY PRE: {Name.ToUpper()}\n" +
-                   $"═══════════════════════════════════\n\n" +
-                   $"  📦 Objem:    {FormatNumber(volume)} jednotiek³\n\n" +
-                   $"  🎨 Povrch:   {FormatNumber(surfaceArea)} jednotiek²\n\n" +
-                   $"═══════════════════════════════════";
+            return Calculate(parameters, 0); // Predvolene vypočítaj objem
         }
     }
 }
